@@ -1,0 +1,128 @@
+{
+  "harness:content-anchor-rejected": {
+    "fixture": "basic-4.txt",
+    "prompt": "Read basic-4.txt and insert a new line BETA2 immediately after the line beta using the edit tool.",
+    "rationale": "Content-only anchors like `beta` violate the protocol and should be rejected instead of being normalized.",
+    "read_output": "0,UwbS|alpha\n1,ZeFd|beta\n2,0yzS|gamma\n3,fL6q|delta",
+    "call": {
+      "kind": "insert_after",
+      "path": "basic-4.txt",
+      "start": "beta",
+      "content": "BETA2"
+    },
+    "result": {
+      "type": "INVALID_OPERATION",
+      "reason": "invalid anchor: 'beta'"
+    },
+    "final_file": "alpha\nbeta\ngamma\ndelta\n"
+  },
+  "harness:full-read-line-anchor": {
+    "fixture": "replace-3.txt",
+    "prompt": "Read replace-3.txt and replace the line two with TWO using the edit tool.",
+    "rationale": "Weak models may echo a full read line like `1,ujzi|two` back into `start` and `end`; the harness should strip the `|content` suffix.",
+    "read_output": "0,NPLd|one\n1,ujzi|two\n2,3kTH|three",
+    "call": {
+      "kind": "replace_range",
+      "path": "replace-3.txt",
+      "start": "1,ujzi|two",
+      "end": "1,ujzi|two",
+      "content": "TWO"
+    },
+    "result": {
+      "text": "0,NPLd|one\n1,0mle|TWO\n2,U2Qz|three",
+      "startLine": 0,
+      "endLine": 2
+    },
+    "final_file": "one\nTWO\nthree\n"
+  },
+  "harness:wrong-hash-same-line": {
+    "fixture": "replace-3.txt",
+    "prompt": "Read replace-3.txt and replace the line two with TWO using the edit tool.",
+    "rationale": "Weak models may preserve the correct line number but hallucinate the hash. The harness currently snaps such anchors to the remembered line for that line number.",
+    "read_output": "0,NPLd|one\n1,ujzi|two\n2,3kTH|three",
+    "call": {
+      "kind": "replace_range",
+      "path": "replace-3.txt",
+      "start": "1,abcd",
+      "end": "1,abcd",
+      "content": "TWO"
+    },
+    "result": {
+      "text": "0,NPLd|one\n1,0mle|TWO\n2,U2Qz|three",
+      "startLine": 0,
+      "endLine": 2
+    },
+    "final_file": "one\nTWO\nthree\n"
+  },
+  "harness:brace-wrapped-anchor": {
+    "fixture": "replace-3.txt",
+    "prompt": "Read replace-3.txt and replace the line two with TWO using the edit tool.",
+    "rationale": "Some models wrap anchors as `{1,abcd}`. The harness strips surrounding braces before normalizing the anchor.",
+    "read_output": "0,NPLd|one\n1,ujzi|two\n2,3kTH|three",
+    "call": {
+      "kind": "replace_range",
+      "path": "replace-3.txt",
+      "start": "{1,abcd}",
+      "end": "{1,abcd}",
+      "content": "TWO"
+    },
+    "result": {
+      "text": "0,NPLd|one\n1,0mle|TWO\n2,U2Qz|three",
+      "startLine": 0,
+      "endLine": 2
+    },
+    "final_file": "one\nTWO\nthree\n"
+  },
+  "harness:omitted-path-after-read": {
+    "fixture": "basic-4.txt",
+    "prompt": "Read basic-4.txt and insert a new line BETA2 immediately after the line beta using the edit tool.",
+    "rationale": "After a successful `read`, weak models may omit `path` on `edit`. The harness should reuse the most recently read file, but still require a real anchor.",
+    "read_output": "0,UwbS|alpha\n1,ZeFd|beta\n2,0yzS|gamma\n3,fL6q|delta",
+    "call": {
+      "kind": "insert_after",
+      "start": "1,ZeFd",
+      "content": "BETA2"
+    },
+    "result": {
+      "text": "0,UwbS|alpha\n1,ZeFd|beta\n2,BJmQ|BETA2\n3,SHk7|gamma\n4,gvcM|delta",
+      "startLine": 0,
+      "endLine": 4
+    },
+    "final_file": "alpha\nbeta\nBETA2\ngamma\ndelta\n"
+  },
+  "harness:omitted-kind-inferred": {
+    "fixture": "replace-3.txt",
+    "prompt": "Read replace-3.txt and replace the line two with TWO using the edit tool.",
+    "rationale": "Weak models may omit `kind` even when the other arguments clearly imply a replace operation. The harness infers the operation kind from the argument pattern.",
+    "read_output": "0,NPLd|one\n1,ujzi|two\n2,3kTH|three",
+    "call": {
+      "path": "replace-3.txt",
+      "start": "1,abcd",
+      "end": "1,abcd",
+      "content": "TWO"
+    },
+    "result": {
+      "text": "0,NPLd|one\n1,0mle|TWO\n2,U2Qz|three",
+      "startLine": 0,
+      "endLine": 2
+    },
+    "final_file": "one\nTWO\nthree\n"
+  },
+  "harness:content-anchor-duplicate-rejected": {
+    "fixture": "duplicate-content.txt",
+    "prompt": "Read duplicate-content.txt and insert BETA2 immediately after the line beta using the edit tool.",
+    "rationale": "This fixture contains two `beta` lines. Content-only anchors are invalid in general and especially unsafe when content is duplicated.",
+    "read_output": "0,UwbS|alpha\n1,ZeFd|beta\n2,iq0_|beta\n3,IUPT|gamma",
+    "call": {
+      "kind": "insert_after",
+      "path": "duplicate-content.txt",
+      "start": "beta",
+      "content": "BETA2"
+    },
+    "result": {
+      "type": "INVALID_OPERATION",
+      "reason": "invalid anchor: 'beta'"
+    },
+    "final_file": "alpha\nbeta\nbeta\ngamma\n"
+  }
+}

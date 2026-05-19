@@ -1,0 +1,89 @@
+{
+  "edit:insert-after-basic": {
+    "fixture": "basic-4.txt",
+    "prompt": "Read basic-4.txt and insert a new line BETA2 immediately after the line beta using the edit tool.",
+    "read_output": "0,UwbS|alpha\n1,ZeFd|beta\n2,0yzS|gamma\n3,fL6q|delta",
+    "call": {
+      "kind": "insert_after",
+      "start": "1,ZeFd",
+      "content": "BETA2"
+    },
+    "result": {
+      "text": "0,UwbS|alpha\n1,ZeFd|beta\n2,BJmQ|BETA2\n3,SHk7|gamma\n4,gvcM|delta",
+      "startLine": 0,
+      "endLine": 4
+    },
+    "final_file": "alpha\nbeta\nBETA2\ngamma\ndelta\n"
+  },
+  "edit:replace-range-basic": {
+    "fixture": "replace-3.txt",
+    "prompt": "Read replace-3.txt and replace the line two with TWO using the edit tool.",
+    "read_output": "0,NPLd|one\n1,ujzi|two\n2,3kTH|three",
+    "call": {
+      "kind": "replace_range",
+      "start": "1,ujzi",
+      "end": "1,ujzi",
+      "content": "TWO"
+    },
+    "result": {
+      "text": "0,NPLd|one\n1,0mle|TWO\n2,U2Qz|three",
+      "startLine": 0,
+      "endLine": 2
+    },
+    "final_file": "one\nTWO\nthree\n"
+  },
+  "edit:delete-range-basic": {
+    "fixture": "basic-4.txt",
+    "prompt": "Read basic-4.txt and delete the lines gamma and delta using the edit tool.",
+    "read_output": "0,UwbS|alpha\n1,ZeFd|beta\n2,0yzS|gamma\n3,fL6q|delta",
+    "call": {
+      "kind": "delete_range",
+      "start": "2,0yzS",
+      "end": "3,fL6q"
+    },
+    "result": {
+      "text": "0,UwbS|alpha\n1,ZeFd|beta",
+      "startLine": 0,
+      "endLine": 1
+    },
+    "final_file": "alpha\nbeta\n"
+  },
+  "edit:insert-at-start": {
+    "fixture": "replace-3.txt",
+    "prompt": "Insert a new first line ZERO at the start of replace-3.txt using the edit tool.",
+    "call": {
+      "kind": "insert_at_start",
+      "content": "ZERO"
+    },
+    "result": {
+      "text": "0,iDOm|ZERO\n1,llQl|one\n2,4ifl|two",
+      "startLine": 0,
+      "endLine": 2
+    },
+    "final_file": "ZERO\none\ntwo\nthree\n"
+  },
+  "edit:expand-import-block": {
+    "fixture": "import-block.txt",
+    "prompt": "Read import-block.txt and replace the line `import (` with three lines: `\"fmt\"`, `\"os\"`, and `\"strings\"` using the edit tool.",
+    "read_output": "0,h-54|package main\n1,7YuC|\n2,aDRZ|import (\n3,sgyA|    \"fmt\"\n4,OULG|)\n5,cNk9|\n6,Umex|func main() {",
+    "call": {
+      "kind": "replace_range",
+      "start": "2,aDRZ",
+      "end": "2,aDRZ",
+      "content": "\"fmt\"\n\"os\"\n\"strings\""
+    },
+    "result": {
+      "text": "0,h-54|package main\n1,7YuC|\n2,1BWp|\"fmt\"\n3,gnu9|\"os\"\n4,mnNy|\"strings\"\n5,wmap|    \"fmt\"\n6,UNHk|)",
+      "startLine": 0,
+      "endLine": 6
+    },
+    "final_file": "package main\n\n\"fmt\"\n\"os\"\n\"strings\"\n    \"fmt\"\n)\n\nfunc main() {\n"
+  },
+  "meta:duplicate-content": {
+    "fixture": "duplicate-content.txt",
+    "prompt": "Read duplicate-content.txt and note that the content `beta` appears more than once, so a bare content anchor would be ambiguous.",
+    "read_output": "0,UwbS|alpha\n1,ZeFd|beta\n2,iq0_|beta\n3,IUPT|gamma",
+    "duplicate_content": "beta",
+    "duplicate_count": 2
+  }
+}

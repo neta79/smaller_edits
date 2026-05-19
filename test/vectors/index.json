@@ -1,0 +1,15 @@
+{
+  "fixtures": [
+    "fixtures/basic-4.txt",
+    "fixtures/replace-3.txt",
+    "fixtures/repeated-lines.txt",
+    "fixtures/blank-lines.txt",
+    "fixtures/duplicate-content.txt",
+    "fixtures/import-block.txt"
+  ],
+  "vector_files": [
+    "vectors/read-vectors.json",
+    "vectors/edit-vectors.json",
+    "vectors/harness-vectors.json"
+  ]
+}

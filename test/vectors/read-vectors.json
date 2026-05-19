@@ -1,0 +1,17 @@
+{
+  "read:basic-4.txt": {
+    "fixture": "basic-4.txt",
+    "prompt": "Read basic-4.txt from the start and show me the returned linehash-formatted lines.",
+    "output": "0,UwbS|alpha\n1,ZeFd|beta\n2,0yzS|gamma\n3,fL6q|delta"
+  },
+  "read:blank-lines.txt": {
+    "fixture": "blank-lines.txt",
+    "prompt": "Read blank-lines.txt from the start and show me the returned linehash-formatted lines, including blank lines.",
+    "output": "0,UwbS|alpha\n1,4Odk|\n2,b7FU|\n3,nLAv|beta\n4,Qj28|\n5,7FvS|gamma"
+  },
+  "read:repeated-lines.txt": {
+    "fixture": "repeated-lines.txt",
+    "prompt": "Read repeated-lines.txt from the start and show me the returned linehash-formatted lines so I can compare identical content lines.",
+    "output": "0,uajK|same\n1,jhsw|same\n2,gMqp|same\n3,Zktu|tail"
+  }
+}
