@@ -2,6 +2,8 @@
 
 `smaller_edits` is a small experiment in making file edits less annoying for LLMs.
 
+In short: no diff karaoke, more finger pointing.
+
 Instead of asking a model to recite half a file back at the harness, it reads lines like this:
 
 ```text
@@ -10,7 +12,15 @@ Instead of asking a model to recite half a file back at the harness, it reads li
 
 Then it edits by pointing at the tiny handle (`123,ujzi`) rather than restating the whole line.
 
-In short: less diff karaoke, more pointing.
+Any problems? Well, it works. And it works better than naked hash references. (They fail in the identical-lines case)
+But it's still **VERY brittle** dealing with sequences of repeated lines. 
+
+It gives no guarantees of success, actually: any previous additive or subtractive edit may have shifted the line numbers, and you can bet the LLM is going at some point to call edit() with the wrong anchors. 
+
+Here is a candidate spec for a runtime model that does two things:
+
+1. solves that for good (allegedly);
+2. and basically lies to the LLM, for a good cause: To reduce context churn to a minimum, eliminate as many invalidations and rereads as possible.
 
 ## Credits
 
@@ -26,10 +36,14 @@ The toolset is a Proof of Concept that has two core operations:
 - `read(path, offset, limit)`
 - `edit(...)`
 
-`read()` returns line-numbered, line-hashed output.
+`read()` returns line-numbered, line-hashed output (with some chained hashing in the mix).
 `edit()` uses those anchors to replace, insert, or delete contiguous ranges.
 
-The specs are here:
+The two tools share a state and must cooperate behind the scenes to keep the anchors valid and the model's view of the file consistent. 
+
+It's not that complex, not it is orthodox, but it helps smaller LLMs immensely.
+
+Full specs are here:
 
 - `spec/smaller-edits-spec.md`
 
@@ -44,17 +58,16 @@ The Agno-based test harness lives here, away from the core implementation:
 ## Pros
 
 - Tiny edit references instead of giant verbatim diff chunks
-- Repeated identical lines are still distinguishable
-- The model gets refreshed context after edits
-- The core implementation is testable without any specific agent framework
-- There is now a reusable vector set under `test/`
+- Repeated identical lines are still distinguishable, and dealth with correctly
+- The model gets refreshed context after edits (optional, not a requirement)
+- Edit manifest can be presented from top-tier multi-patch in a single call down to very barebones 2-parameter callable vof VERY small models.
 
 ## Cons
 
 - This is still a protocol, not magic
-- Models must pay attention to fresh anchors after each edit
+- Smaller models stop corrupting stuff by accident, but they can still call the tool wrong and incur in forced rereads
 - Very weak models still get confused by tool manifests surprisingly easily
-- Harness wording matters a lot
+- Harness wording matters a lot. There's some art to it.
 - If you make the manifest too clever, tiny models will absolutely use the cleverness against you
 
 ## Repo Map
